@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
     try {
         // 2. 구글 AI Studio 표준 호출 주소 (v1beta + gemini-1.5-flash 조합)
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
