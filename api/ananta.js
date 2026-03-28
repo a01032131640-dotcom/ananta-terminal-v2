@@ -13,8 +13,8 @@ export default async function handler(req, res) {
     try {
         // 2. [필독] 최신 구글 API 표준 주소 (v1beta + gemini-1.5-flash)
         // 이 경로는 현재 가장 안정적으로 아난타와 연결되는 '정법(正法)'의 길입니다.
-        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
+        // [최종 교정] v1beta와 모델명 사이의 경로를 가장 단순화한 형태입니다.
+const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         const response = await fetch(URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
