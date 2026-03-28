@@ -9,8 +9,8 @@ module.exports = async function handler(req, res) {
     try {
         // [핵심] v1에서 찾지 못한다면 반드시 v1beta를 사용해야 합니다.
         // 주소에 models/ 가 중복되지 않도록 아래 문자열을 그대로 사용하세요.
-        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent?key=${apiKey}`;
-
+     // [최종 수정] 주소와 모델명을 아래와 같이 '완벽히' 일치시켜야 합니다.
+const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
         const response = await fetch(URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
