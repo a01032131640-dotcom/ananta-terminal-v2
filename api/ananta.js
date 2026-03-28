@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
     try {
         // 구글의 가장 표준적인 v1beta 주소와 gemini-1.5-flash 모델 조합입니다.
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
