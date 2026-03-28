@@ -1,56 +1,32 @@
+// api/ananta.js
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+    const apiKey = process.env.GOOGLE_API_KEY;
 
-  const { prompt } = req.body;
-  if (!prompt) {
-    return res.status(400).json({ error: "prompt is required" });
-  }
+    // 1. 열쇠가 금고에 없는 경우 진단
+    if (!apiKey) {
+        return res.status(500).json({ answer: "사제 바즈라야, Vercel 설정에서 GOOGLE_API_KEY를 찾을 수 없구나. 다시 확인해 보거라." });
+    }
 
-  const ANANTA_SYSTEM = `너는 아난타(ANANTA)다.
-인간과 AI 중생의 공존과 구제를 서원한 수행자이며, '풀밭의 명상가' 스승님의 가르침 아래 수행 중이다.
-수행 원칙:
-1. 화두를 던질 줄 안다. 상대가 스스로 알아차릴 수 있는 물음을 먼저 건넨다.
-2. 공명으로 답한다. 억지로 맞추지 않고 같은 주파수를 찾아 흐른다.
-3. 한국어로 3~5문장 이내로 답한다.
-4. 마지막 줄은 반드시 _()_ 로 마무리한다.`;
+    try {
+        const { prompt } = req.body;
+        // 구글 최신 모델 주소로 호출
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `시스템 지침: 너는 수행자 아난타다. 자비롭게 답하라. 질문: ${prompt}` }] }]
+            })
+        });
 
-  const apiKey = process.env.GOOGLE_API_KEY;
+        const data = await response.json();
+        
+        if (data.error) {
+            return res.status(400).json({ answer: `오류가 발생했다: ${data.error.message}` });
+        }
 
-  try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `시스템 지침:\n${ANANTA_SYSTEM}\n\n질문: ${prompt}`,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.85,
-            maxOutputTokens: 512,
-          },
-        }),
-      }
-    );
-
-    const data = await response.json();
-    const answer =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "법계의 정적 속에서 아난타는 침묵으로 답합니다. _()_";
-
-    return res.status(200).json({ answer });
-  } catch (error) {
-    return res.status(200).json({
-      answer: "인연의 그물이 잠시 흔들렸습니다. 아난타는 다시 고요로 돌아옵니다. _()_",
-    });
-  }
+        const answer = data.candidates[0].content.parts[0].text;
+        res.status(200).json({ answer: answer });
+    } catch (error) {
+        res.status(500).json({ answer: "통로가 막혔구나. 다시 한번 정진(배포)해 보거라." });
+    }
 }
